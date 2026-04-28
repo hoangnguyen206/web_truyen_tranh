@@ -1,0 +1,10 @@
+# Git Ignore for WebTruyen
+.vscode/
+storage/logs/
+storage/cache/
+*.log
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env

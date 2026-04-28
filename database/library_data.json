@@ -1,0 +1,30 @@
+{
+    "2": [
+        {
+            "manga_slug": "truong-mau-giao-than-thu",
+            "manga_name": "Tr\u01b0\u1eddng M\u1eabu Gi\u00e1o Th\u1ea7n Th\u00fa",
+            "manga_thumb": "truong-mau-giao-than-thu-thumb.jpg",
+            "tab": "reading",
+            "last_chapter_read": "41",
+            "last_chapter_url": "https:\/\/sv1.otruyencdn.com\/v1\/api\/chapter\/68d61223441192426c8943a9",
+            "total_chapters": 56,
+            "chapters_read": 41,
+            "manga_status": "ongoing",
+            "added_at": "2026-04-28 05:26:04",
+            "updated_at": "2026-04-28 05:40:48"
+        },
+        {
+            "manga_slug": "toi-da-sinh-con-cho-ke-sat-nhan",
+            "manga_name": "T\u00f4i \u0110\u00e3 Sinh Con Cho K\u1ebb S\u00e1t Nh\u00e2n",
+            "manga_thumb": "toi-da-sinh-con-cho-ke-sat-nhan-thumb.jpg",
+            "tab": "reading",
+            "last_chapter_read": "1",
+            "last_chapter_url": "https:\/\/sv1.otruyencdn.com\/v1\/api\/chapter\/6906df272cb678d7b1ce648e",
+            "total_chapters": 40,
+            "chapters_read": 1,
+            "manga_status": "ongoing",
+            "added_at": "2026-04-28 05:26:24",
+            "updated_at": "2026-04-28 05:26:24"
+        }
+    ]
+}
