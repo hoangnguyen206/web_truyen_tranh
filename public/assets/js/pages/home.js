@@ -7,8 +7,12 @@ const SPINNER = `<div class="pt-24 pb-32 text-center"><span class="material-symb
 let currentPage = 1;
 let totalPages = 1;
 let cdnBase = 'https://img.otruyenapi.com';
+let heroIntervalId = null; // Track carousel interval for cleanup
 
 export async function render() {
+    // Cleanup previous carousel interval
+    if (heroIntervalId) { clearInterval(heroIntervalId); heroIntervalId = null; }
+    
     const container = document.getElementById('app-container');
     container.innerHTML = SPINNER;
     window.showAppNav();
@@ -36,12 +40,12 @@ export async function render() {
         
         let html = `
         <main class="pt-16 pb-24 md:pb-0" style="font-family: 'Be Vietnam Pro', sans-serif;">
-            <!-- Hero Section -->
-            <section class="relative w-full h-[60vh] md:h-[70vh] min-h-[400px] overflow-hidden">
-                ${renderHero(homeItems[0] || {}, t)}
+            <!-- Hero Banner Carousel -->
+            <section class="w-full mb-8 md:mb-12 px-0 md:px-6">
+                ${renderHeroCarousel(homeItems.slice(0, 5), t)}
             </section>
             
-            <div class="px-4 md:px-6 max-w-7xl mx-auto -mt-16 relative z-10">
+            <div class="px-4 md:px-6 max-w-7xl mx-auto">
                 <!-- Latest Releases -->
                 <section class="mb-14">
                     <div class="flex justify-between items-end mb-6">
@@ -105,36 +109,229 @@ export async function render() {
         // Bind pagination events
         bindPaginationEvents();
         
+        // Initialize hero carousel
+        initHeroCarousel();
+        
+        // Bind hero "Add to Library" button
+        window._heroAddToLibrary = async (slug) => {
+            const user = localStorage.getItem('mangaflow_user');
+            if (!user) {
+                window.router.navigate('/login');
+                return;
+            }
+            try {
+                await api.addToLibrary({ manga_slug: slug, tab: 'want_to_read' });
+                // Show brief feedback
+                const btn = document.querySelector('.hero-slide.active [data-hero-lib]');
+                if (btn) {
+                    const origHTML = btn.innerHTML;
+                    btn.innerHTML = `<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">bookmark_added</span> ${t('saved')}`;
+                    btn.classList.remove('bg-white/10');
+                    btn.classList.add('bg-emerald-500/30');
+                    setTimeout(() => {
+                        btn.innerHTML = origHTML;
+                        btn.classList.add('bg-white/10');
+                        btn.classList.remove('bg-emerald-500/30');
+                    }, 2000);
+                }
+            } catch (e) {
+                console.error('Add to library error:', e);
+            }
+        };
+        
     } catch (error) {
         const t = (k) => i18n.t(k);
         container.innerHTML = `<div class="pt-24 pb-32 text-center text-red-500">${t('error_load_home')}: ${error.message}</div>`;
     }
 }
 
-function renderHero(manga, t) {
-    if (!manga.name) return '';
-    const imgUrl = cdnImage(manga.thumb_url);
-    return `
-        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat blur-xl scale-110 opacity-50 dark:opacity-30 transition-all duration-1000" style="background-image: url('${imgUrl}')"></div>
-        <div class="absolute inset-0 bg-gradient-to-t from-white dark:from-zinc-950 via-white/60 dark:via-zinc-950/60 to-transparent"></div>
-        <div class="absolute inset-0 bg-gradient-to-r from-white dark:from-zinc-950 via-white/40 dark:via-zinc-950/40 to-transparent md:w-2/3"></div>
-        <div class="relative h-full flex items-center px-4 md:px-6 max-w-7xl mx-auto">
-            <div class="w-full md:w-1/2 flex flex-col items-start gap-4 z-10">
-                <div class="flex flex-wrap gap-2 mb-2">
-                    <span class="px-3 py-1 bg-rose-600 text-white rounded-full text-xs font-bold shadow-sm">${t('hot')}</span>
+// ===== Hero Carousel =====
+
+function renderHeroCarousel(mangaList, t) {
+    if (!mangaList || mangaList.length === 0) return '';
+    
+    const slides = mangaList.filter(m => m.name).map((manga, idx) => {
+        const imgUrl = cdnImage(manga.thumb_url);
+        const categories = manga.category || [];
+        const categoryTags = categories.slice(0, 3).map(c => {
+            const name = c.name || c;
+            const slug = c.slug || encodeURIComponent(name);
+            return `<a href="/genres/${slug}" data-link class="bg-white/15 hover:bg-rose-500/80 text-white px-3 py-1 rounded-full text-[11px] font-semibold backdrop-blur-md border border-white/10 transition-colors z-20 relative pointer-events-auto">${name}</a>`;
+        }).join('');
+        
+        const firstChapterApiData = manga.chaptersLatest?.[0]?.chapter_api_data || '';
+        const firstChapterName = manga.chaptersLatest?.[0]?.chapter_name || '1';
+        const rankNum = idx + 1;
+        
+        // Build the "Read Chapter 1" link — goes directly to reader
+        const readChapter1Href = firstChapterApiData 
+            ? `/read?url=${encodeURIComponent(firstChapterApiData)}&slug=${manga.slug}`
+            : `/manga/${manga.slug}`;
+        
+        return `
+        <div class="hero-slide absolute inset-0 transition-opacity duration-700 ease-in-out ${idx === 0 ? 'active opacity-100 z-10' : 'opacity-0 z-0'}" data-slide="${idx}">
+            <!-- Banner Image -->
+            <img alt="${manga.name}" 
+                 class="w-full h-full object-cover transition-transform duration-[8000ms] ease-out ${idx === 0 ? 'scale-105' : 'scale-100'}" 
+                 src="${imgUrl}" 
+                 loading="${idx === 0 ? 'eager' : 'lazy'}"
+                 onerror="this.style.display='none'" />
+            <!-- Gradient Overlay -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+            <!-- Content -->
+            <div class="absolute inset-0 flex flex-col justify-end p-6 md:p-10">
+                <!-- Tags -->
+                <div class="flex flex-wrap gap-2 mb-3">
+                    <span class="bg-rose-600 text-white px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider shadow-lg">
+                        🔥 ${t('trending_num')} #${rankNum}
+                    </span>
+                    ${categoryTags}
                 </div>
-                <h1 class="text-3xl md:text-5xl font-black text-zinc-900 dark:text-white leading-tight drop-shadow-sm line-clamp-2 md:line-clamp-3" style="font-family: 'Epilogue', sans-serif;">${manga.name}</h1>
-                <p class="text-base text-zinc-600 dark:text-zinc-400 line-clamp-3 md:line-clamp-4 max-w-lg hidden md:block">
-                    ${t('chapter_latest')}: ${manga.chaptersLatest?.[0]?.chapter_name || 'N/A'}
+                <!-- Title -->
+                <h2 class="text-white text-3xl md:text-[48px] font-black leading-tight mb-2 line-clamp-2 drop-shadow-lg" style="font-family: 'Epilogue', sans-serif; letter-spacing: -0.02em;">
+                    ${manga.name}
+                </h2>
+                <!-- Synopsis -->
+                <p class="text-zinc-300 text-sm md:text-[18px] leading-relaxed max-w-2xl mb-6 line-clamp-2 hidden md:block" style="font-family: 'Be Vietnam Pro', sans-serif;">
+                    ${t('chapter_latest')}: Ch. ${firstChapterName} · ${categories.slice(0, 2).map(c => c.name || c).join(' / ') || 'Manga'}
                 </p>
-                <div class="flex gap-4 mt-4 w-full md:w-auto">
-                    <a href="/manga/${manga.slug}" data-link class="flex-1 md:flex-none flex items-center justify-center gap-2 bg-rose-600 text-white hover:bg-rose-700 active:scale-95 transition-all px-8 py-4 rounded-full text-sm font-bold shadow-lg">
-                        <span class="material-symbols-outlined text-[20px] fill">play_arrow</span> ${t('read_now')}
+                <p class="text-zinc-300 text-sm leading-relaxed max-w-2xl mb-5 line-clamp-2 md:hidden" style="font-family: 'Be Vietnam Pro', sans-serif;">
+                    Ch. ${firstChapterName} · ${categories.slice(0, 2).map(c => c.name || c).join(' / ') || 'Manga'}
+                </p>
+                <!-- Action Buttons -->
+                <div class="flex items-center gap-3">
+                    <a href="${readChapter1Href}" data-link 
+                       class="bg-rose-600 hover:bg-rose-700 text-white px-6 md:px-8 py-3 md:py-3.5 rounded-full font-semibold text-sm md:text-[14px] transition-all active:scale-95 flex items-center gap-2 shadow-lg shadow-rose-600/30">
+                        <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+                        ${t('read_chapter_1')}
                     </a>
+                    <button data-hero-lib onclick="window._heroAddToLibrary && window._heroAddToLibrary('${manga.slug}')"
+                       class="bg-white/10 hover:bg-white/20 text-white px-5 md:px-6 py-3 md:py-3.5 rounded-full font-semibold text-sm md:text-[14px] transition-all active:scale-95 backdrop-blur-md border border-white/10 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[18px]">bookmark_add</span>
+                        ${t('add_to_library')}
+                    </button>
                 </div>
             </div>
+        </div>`;
+    }).join('');
+    
+    // Dot indicators
+    const dots = mangaList.filter(m => m.name).map((_, idx) => 
+        `<button class="hero-dot w-2.5 h-2.5 rounded-full transition-all duration-300 ${idx === 0 ? 'bg-white w-8' : 'bg-white/40 hover:bg-white/60'}" data-dot="${idx}"></button>`
+    ).join('');
+    
+    return `
+    <div class="hero-carousel relative w-full h-[420px] md:h-[520px] rounded-none md:rounded-2xl overflow-hidden shadow-xl md:mx-auto md:max-w-7xl md:mt-4" id="hero-carousel">
+        ${slides}
+        <!-- Dot Indicators -->
+        <div class="absolute bottom-4 md:bottom-6 right-6 md:right-10 flex items-center gap-2 z-20" id="hero-dots">
+            ${dots}
         </div>
-    `;
+        <!-- Progress bar -->
+        <div class="absolute bottom-0 left-0 w-full h-[3px] z-20">
+            <div class="h-full bg-rose-500/80 transition-all" id="hero-progress" style="width: 0%; transition: width 4s linear;"></div>
+        </div>
+    </div>`;
+}
+
+function initHeroCarousel() {
+    const carousel = document.getElementById('hero-carousel');
+    if (!carousel) return;
+    
+    const slides = carousel.querySelectorAll('.hero-slide');
+    const dots = carousel.querySelectorAll('.hero-dot');
+    const progressBar = document.getElementById('hero-progress');
+    if (slides.length <= 1) return;
+    
+    let currentSlide = 0;
+    let isPaused = false;
+    const INTERVAL = 4000; // 4 seconds
+    
+    function goToSlide(idx) {
+        // Remove active from current
+        slides[currentSlide].classList.remove('active', 'opacity-100', 'z-10');
+        slides[currentSlide].classList.add('opacity-0', 'z-0');
+        // Reset scale on outgoing slide image
+        const outImg = slides[currentSlide].querySelector('img');
+        if (outImg) outImg.classList.remove('scale-105');
+        
+        // Update dots
+        dots[currentSlide].classList.remove('bg-white', 'w-8');
+        dots[currentSlide].classList.add('bg-white/40');
+        dots[currentSlide].style.width = '';
+        
+        currentSlide = idx;
+        
+        // Activate new slide
+        slides[currentSlide].classList.remove('opacity-0', 'z-0');
+        slides[currentSlide].classList.add('active', 'opacity-100', 'z-10');
+        // Ken Burns zoom on incoming slide image
+        const inImg = slides[currentSlide].querySelector('img');
+        if (inImg) {
+            inImg.classList.remove('scale-105');
+            // Force reflow to restart the animation
+            void inImg.offsetWidth;
+            inImg.classList.add('scale-105');
+        }
+        
+        // Update dots
+        dots[currentSlide].classList.add('bg-white', 'w-8');
+        dots[currentSlide].classList.remove('bg-white/40');
+        
+        // Reset progress bar
+        resetProgress();
+    }
+    
+    function nextSlide() {
+        goToSlide((currentSlide + 1) % slides.length);
+    }
+    
+    function resetProgress() {
+        if (progressBar) {
+            progressBar.style.transition = 'none';
+            progressBar.style.width = '0%';
+            // Force reflow
+            void progressBar.offsetWidth;
+            progressBar.style.transition = `width ${INTERVAL}ms linear`;
+            progressBar.style.width = '100%';
+        }
+    }
+    
+    // Click handlers for dots
+    dots.forEach((dot, idx) => {
+        dot.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (idx !== currentSlide) {
+                goToSlide(idx);
+                restartInterval();
+            }
+        });
+    });
+    
+    // Pause on hover, resume on leave
+    carousel.addEventListener('mouseenter', () => { isPaused = true; });
+    carousel.addEventListener('mouseleave', () => { 
+        isPaused = false; 
+        restartInterval();
+    });
+    
+    // Auto-rotation interval
+    function startInterval() {
+        // Cleanup previous interval if exists
+        if (heroIntervalId) clearInterval(heroIntervalId);
+        heroIntervalId = setInterval(() => {
+            if (!isPaused) nextSlide();
+        }, INTERVAL);
+    }
+    
+    function restartInterval() {
+        startInterval();
+        resetProgress();
+    }
+    
+    // Start
+    resetProgress();
+    startInterval();
 }
 
 function renderMangaCard(manga, cdn) {

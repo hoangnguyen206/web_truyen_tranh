@@ -15,7 +15,7 @@ export async function render(slug) {
         const manga = data.item;
         const img = cdnImage(manga.thumb_url, cdn);
         const chapters = manga.chapters?.[0]?.server_data || [];
-        const categories = (manga.category || []).map(c => c.name);
+        const categories = manga.category || [];
         const statusMap = { ongoing: t('ongoing_status'), completed: t('completed_status'), coming_soon: t('filter_coming_soon') };
         const statusText = statusMap[manga.status] || manga.status;
         const author = (manga.author || [t('updating')]).join(', ');
@@ -133,7 +133,11 @@ export async function render(slug) {
                         
                         <!-- Genre Chips -->
                         <div class="flex flex-wrap gap-xs mb-lg">
-                            ${categories.map(c => `<span class="bg-surface-container-low border border-outline-variant text-on-surface-variant font-label-sm text-label-sm px-sm py-xs rounded-md">${c}</span>`).join('')}
+                            ${categories.map(c => {
+                                const name = c.name || c;
+                                const slug = c.slug || encodeURIComponent(name);
+                                return `<a href="/genres/${slug}" data-link class="bg-surface-container-low border border-outline-variant text-on-surface-variant font-label-sm text-label-sm px-sm py-xs rounded-md hover:bg-primary hover:text-on-primary transition-colors cursor-pointer">${name}</a>`;
+                            }).join('')}
                         </div>
                         
                         <!-- Synopsis -->

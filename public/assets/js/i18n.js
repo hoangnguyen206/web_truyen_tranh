@@ -26,6 +26,11 @@ const translations = {
         page: 'Trang',
         prev: 'Trước',
         next: 'Sau',
+        // Hero Banner
+        trending_num: 'Thịnh Hành',
+        read_chapter_1: 'Đọc Chương 1',
+        add_to_library: 'Thêm Vào Thư Viện',
+        introduction: 'Giới thiệu',
 
         // Trending / Ranking
         ranking_title: '🏆 Bảng Xếp Hạng',
@@ -164,6 +169,11 @@ const translations = {
         page: 'Page',
         prev: 'Prev',
         next: 'Next',
+        // Hero Banner
+        trending_num: 'Trending',
+        read_chapter_1: 'Read Chapter 1',
+        add_to_library: 'Add to Library',
+        introduction: 'Introduction',
 
         ranking_title: '🏆 Rankings',
         ranking_desc: 'Most read manga.',

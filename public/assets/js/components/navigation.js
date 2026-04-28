@@ -1,6 +1,7 @@
 // public/assets/js/components/navigation.js
 // MangaFlow Design System — Navbar & Bottom Navigation
 import { i18n } from '../i18n.js';
+
 import { api } from '../api.js';
 
 // Cache genres list
@@ -117,6 +118,25 @@ export function renderNavbar() {
                     <span class="material-symbols-outlined text-[22px]" id="dark-mode-icon">dark_mode</span>
                 </button>
                 
+                <!-- Language Switcher -->
+                <div class="lang-switcher-dropdown relative">
+                    <button class="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-full transition-colors text-zinc-500 dark:text-zinc-400" id="lang-switch-trigger" title="${t('language')}">
+                        <span class="material-symbols-outlined text-[22px]">translate</span>
+                    </button>
+                    <div class="lang-dropdown-menu" id="lang-dropdown-panel">
+                        <button class="lang-option ${i18n.getLocale() === 'vi' ? 'active' : ''}" data-lang="vi">
+                            <span class="text-base">🇻🇳</span>
+                            <span>Tiếng Việt</span>
+                            ${i18n.getLocale() === 'vi' ? '<span class="material-symbols-outlined text-[16px] ml-auto text-rose-500">check</span>' : ''}
+                        </button>
+                        <button class="lang-option ${i18n.getLocale() === 'en' ? 'active' : ''}" data-lang="en">
+                            <span class="text-base">🇬🇧</span>
+                            <span>English</span>
+                            ${i18n.getLocale() === 'en' ? '<span class="material-symbols-outlined text-[16px] ml-auto text-rose-500">check</span>' : ''}
+                        </button>
+                    </div>
+                </div>
+                
                 ${userSection}
             </div>
         </div>
@@ -174,6 +194,68 @@ export function renderNavbar() {
         html.dark .avatar-menu-item:hover {
             background: #27272a;
         }
+        /* Language Switcher Dropdown */
+        .lang-switcher-dropdown { position: relative; }
+        .lang-dropdown-menu {
+            position: absolute;
+            right: 0;
+            top: calc(100% + 8px);
+            width: 180px;
+            background: #fff;
+            border: 1px solid #e4e4e7;
+            border-radius: 14px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(4px);
+            transition: all 0.2s ease;
+            z-index: 100;
+            overflow: hidden;
+            padding: 4px;
+        }
+        html.dark .lang-dropdown-menu {
+            background: #18181b;
+            border-color: #3f3f46;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+        }
+        .lang-switcher-dropdown.open .lang-dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .lang-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #52525b;
+            cursor: pointer;
+            transition: background 0.15s;
+            width: 100%;
+            border: none;
+            background: none;
+            font-family: 'Be Vietnam Pro', sans-serif;
+        }
+        html.dark .lang-option {
+            color: #a1a1aa;
+        }
+        .lang-option:hover {
+            background: #f4f4f5;
+        }
+        html.dark .lang-option:hover {
+            background: #27272a;
+        }
+        .lang-option.active {
+            background: #fff1f2;
+            color: #e11d48;
+        }
+        html.dark .lang-option.active {
+            background: rgba(225, 29, 72, 0.1);
+            color: #fb7185;
+        }
     </style>`;
 }
 
@@ -210,7 +292,7 @@ export function renderBottomNav() {
     </nav>`;
 }
 
-// Initialize dark mode toggle and genre dropdown after navbar renders
+// Initialize dark mode toggle, language switcher, and genre dropdown after navbar renders
 export function initNavbarInteractions() {
     // Dark mode toggle
     const darkBtn = document.getElementById('dark-mode-toggle');
@@ -226,6 +308,36 @@ export function initNavbarInteractions() {
             document.documentElement.classList.toggle('light', !nowDark);
             localStorage.setItem('mangaflow_dark', nowDark);
             if (darkIcon) darkIcon.textContent = nowDark ? 'light_mode' : 'dark_mode';
+        });
+    }
+    
+    // Language switcher dropdown (click-based toggle)
+    const langTrigger = document.getElementById('lang-switch-trigger');
+    const langDropdownContainer = langTrigger?.closest('.lang-switcher-dropdown');
+    if (langTrigger && langDropdownContainer) {
+        langTrigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            langDropdownContainer.classList.toggle('open');
+        });
+        // Close when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!langDropdownContainer.contains(e.target)) {
+                langDropdownContainer.classList.remove('open');
+            }
+        });
+        // Language option clicks
+        const langOptions = langDropdownContainer.querySelectorAll('.lang-option');
+        langOptions.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const lang = btn.getAttribute('data-lang');
+                if (lang && lang !== i18n.getLocale()) {
+                    i18n.setLocale(lang);
+                    window.refreshLayout();
+                    // Re-render current page
+                    window.router.resolve();
+                }
+                langDropdownContainer.classList.remove('open');
+            });
         });
     }
     
