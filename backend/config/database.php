@@ -9,7 +9,14 @@ $port = $_ENV['DB_PORT'] ?? getenv('DB_PORT') ?: 3306;
 
 global $conn;
 try {
-    $conn = @new mysqli($servername, $username, $password, $dbname, (int)$port);
+    if (strpos($servername, '/') === 0) {
+        // KẾT NỐI QUA UNIX SOCKET (Dành cho Cloud Run)
+        // Tham số: Host=null, User, Pass, DB, Port=null, Socket=$servername
+        $conn = new mysqli(null, $username, $password, $dbname, null, $servername);
+    } else {
+        // KẾT NỐI QUA TCP/IP (Dành cho Localhost)
+        $conn = new mysqli($servername, $username, $password, $dbname, (int)$port);
+    }
 } catch (mysqli_sql_exception $e) {
     http_response_code(500);
     header('Content-Type: application/json; charset=utf-8');
