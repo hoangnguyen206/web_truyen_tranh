@@ -5,7 +5,7 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     zip \
     unzip \
-    && docker-php-ext-install pdo pdo_mysql zip
+    && docker-php-ext-install pdo pdo_mysql mysqli zip
 
 # 2. Kích hoạt module rewrite của Apache (Bắt buộc cho SPA và API)
 RUN a2enmod rewrite
