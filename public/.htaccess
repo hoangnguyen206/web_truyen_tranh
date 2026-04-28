@@ -1,10 +1,8 @@
 RewriteEngine On
-RewriteBase /
 
-# Serve existing files directly
+# Nếu là file có thật (như /assets/js/app.js) thì trả về file đó luôn, dừng lại tại đây
 RewriteCond %{REQUEST_FILENAME} -f
-RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
-# Route everything else through index.php
-RewriteRule ^(.*)$ index.php [QSA,L]
+# Nếu không phải file thật, mới đẩy vào index.php để xử lý
+RewriteRule ^ index.php [QSA,L]
