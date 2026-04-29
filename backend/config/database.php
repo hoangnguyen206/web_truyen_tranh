@@ -22,7 +22,7 @@ try {
     header('Content-Type: application/json; charset=utf-8');
     echo json_encode([
         'success' => false,
-        'message' => 'Kết nối database thất bại: ' . $e->getMessage()
+        'message' => 'Kết nối database thất bại: ' . $e->getMessage() . ' (Host: ' . $servername . ')'
     ]);
     exit;
 }
