@@ -15,11 +15,10 @@ ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# 4. SỬA CỔNG (Dùng lệnh sed chính xác hơn cho Apache)
-# Lưu ý: Cloud Run sẽ truyền biến môi trường PORT vào, ta cần ép Apache nghe theo biến đó
+# 4. SỬA CỔNG (Render sẽ truyền biến môi trường PORT vào)
 RUN sed -i "s/Listen 80/Listen \${PORT}/g" /etc/apache2/ports.conf
 RUN sed -i "s/<VirtualHost \*:80>/<VirtualHost *:\${PORT}>/g" /etc/apache2/sites-available/*.conf
-RUN echo "PassEnv DB_HOST DB_USER DB_PASS DB_NAME GOOGLE_CLIENT_ID GOOGLE_CLIENT_SECRET GOOGLE_REDIRECT_URI" >> /etc/apache2/apache2.conf
+RUN echo "PassEnv DB_HOST DB_PORT DB_USER DB_PASS DB_NAME GOOGLE_CLIENT_ID GOOGLE_CLIENT_SECRET GOOGLE_REDIRECT_URI" >> /etc/apache2/apache2.conf
 
 # 5. Sao chép mã nguồn
 COPY . /var/www/html/
@@ -29,9 +28,9 @@ COPY . /var/www/html/
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html
 
-# 7. Thiết lập biến môi trường mặc định (Cloud Run sẽ ghi đè cái này)
-ENV PORT 8080
-EXPOSE 8080
+# 7. Thiết lập biến môi trường mặc định (Render sẽ ghi đè cái này nếu chạy trên Render)
+ENV PORT 10000
+EXPOSE 10000
 
 # Chạy Apache
 CMD ["apache2-foreground"]

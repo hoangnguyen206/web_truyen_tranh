@@ -14,8 +14,9 @@ try {
         // Tham số: Host=null, User, Pass, DB, Port=null, Socket=$servername
         $conn = new mysqli(null, $username, $password, $dbname, null, $servername);
     } else {
-        // KẾT NỐI QUA TCP/IP (Dành cho Localhost)
-        $conn = new mysqli($servername, $username, $password, $dbname, (int)$port);
+        // KẾT NỐI QUA TCP/IP (Hỗ trợ SSL cho các dịch vụ Cloud như Aiven)
+        $conn = mysqli_init();
+        $conn->real_connect($servername, $username, $password, $dbname, (int)$port, null, MYSQLI_CLIENT_SSL);
     }
 } catch (mysqli_sql_exception $e) {
     http_response_code(500);
