@@ -7,8 +7,8 @@ require_once __DIR__ . '/../config/database.php';
 define('GOOGLE_CLIENT_ID', $_ENV['GOOGLE_CLIENT_ID'] ?? getenv('GOOGLE_CLIENT_ID'));
 define('GOOGLE_CLIENT_SECRET', $_ENV['GOOGLE_CLIENT_SECRET'] ?? getenv('GOOGLE_CLIENT_SECRET'));
 
-// Cố định đường dẫn callback để tránh lỗi redirect_uri_mismatch
-define('GOOGLE_REDIRECT_URI', $_ENV['GOOGLE_REDIRECT_URI'] ?? getenv('GOOGLE_REDIRECT_URI') ?: 'http://localhost:8000/auth/google/callback');
+// Cố định đường dẫn callback (Nên thiết lập trong Environment Variables trên Render)
+define('GOOGLE_REDIRECT_URI', $_ENV['GOOGLE_REDIRECT_URI'] ?? getenv('GOOGLE_REDIRECT_URI') ?? '');
 
 function handleLogin() {
     global $conn;
