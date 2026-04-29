@@ -66,22 +66,27 @@ class Router {
 
 // --- Layout Components ---
 import { renderNavbar, renderBottomNav, initNavbarInteractions } from './components/navigation.js';
+import { renderFooter, initFooterInteractions } from './components/footer.js';
 
 function initLayout() {
     document.getElementById('navbar-container').innerHTML = renderNavbar();
     document.getElementById('bottom-nav-container').innerHTML = renderBottomNav();
+    document.getElementById('footer-container').innerHTML = renderFooter();
     // Initialize interactive features (dark mode toggle, genre dropdown)
     initNavbarInteractions();
+    initFooterInteractions();
 }
 
 // Show/hide navbars (used by reader page)
 window.showAppNav = () => {
     document.getElementById('navbar-container').style.display = '';
     document.getElementById('bottom-nav-container').style.display = '';
+    document.getElementById('footer-container').style.display = '';
 };
 window.hideAppNav = () => {
     document.getElementById('navbar-container').style.display = 'none';
     document.getElementById('bottom-nav-container').style.display = 'none';
+    document.getElementById('footer-container').style.display = 'none';
 };
 
 // Expose a method to refresh layout (used after language change)
