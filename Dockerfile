@@ -19,6 +19,7 @@ RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 # Lưu ý: Cloud Run sẽ truyền biến môi trường PORT vào, ta cần ép Apache nghe theo biến đó
 RUN sed -i "s/Listen 80/Listen \${PORT}/g" /etc/apache2/ports.conf
 RUN sed -i "s/<VirtualHost \*:80>/<VirtualHost *:\${PORT}>/g" /etc/apache2/sites-available/*.conf
+RUN echo "PassEnv DB_HOST DB_USER DB_PASS DB_NAME GOOGLE_CLIENT_ID GOOGLE_CLIENT_SECRET GOOGLE_REDIRECT_URI" >> /etc/apache2/apache2.conf
 
 # 5. Sao chép mã nguồn
 COPY . /var/www/html/
