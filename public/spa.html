@@ -31,41 +31,83 @@
         }
         .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
 
-        /* ===== DARK MODE FULL FIX ===== */
+        /* ===== BẢNG MÀU TỐI (DARK MODE) HOÀN CHỈNH (CSS VARIABLES - WCAG 2.1 AA) ===== */
         html.dark {
+            --bg-main: #121212;      /* Nền chính: Slate Gray tối, dịu mắt */
+            --bg-card: #1F2937;      /* Thẻ chương/Card: Gray-800, không bị gắt */
+            --text-main: #F3F4F6;    /* Văn bản chung: Sáng hơn (Gray-100) */
+            --text-muted: #D1D5DB;   /* Văn bản phụ/Label: Gray-300 */
+            --border-color: #374151; /* Viền tối mỏng */
             color-scheme: dark;
         }
-        html.dark body {
-            background-color: #0a0a0f;
-            color: #e4e4e7;
+
+        html.dark body,
+        html.dark .bg-background,
+        html.dark .bg-surface-bright,
+        html.dark .dark\:bg-zinc-950 {
+            background-color: var(--bg-main) !important;
+            color: var(--text-main) !important;
         }
 
-        /* Dark mode overrides for all text */
+        /* Thẻ Chương, Dropdown & Card chung */
+        html.dark .bg-white,
+        html.dark .bg-surface,
+        html.dark .bg-surface-container-low,
+        html.dark .bg-surface-container-high,
+        html.dark .bg-surface-container-highest,
+        html.dark .bg-surface-container-lowest,
+        html.dark .dark\:bg-zinc-900,
+        html.dark .dark\:bg-zinc-800,
+        html.dark .dark\:bg-zinc-800\/95,
+        html.dark .bg-zinc-100,
+        html.dark .bg-zinc-50 {
+            background-color: var(--bg-card) !important;
+        }
+
+        /* Active Chapter Card */
+        html.dark .bg-primary-fixed-dim\/20 {
+            background-color: #374151 !important;
+            border-color: #e11d48 !important; /* Đỏ để làm nổi bật nhẹ */
+        }
+
+        /* Hover Cards */
+        html.dark .hover\:bg-zinc-200:hover,
+        html.dark .hover\:bg-zinc-700:hover,
+        html.dark .group:hover .bg-surface {
+            background-color: #374151 !important;
+        }
+
+        /* Tăng độ sáng Văn bản chung (Tiêu đề, Text chính) */
         html.dark .text-zinc-900,
         html.dark .text-zinc-800,
-        html.dark .text-zinc-700 {
-            color: #e4e4e7 !important;
-        }
-        html.dark .text-zinc-600 {
-            color: #a1a1aa !important;
-        }
-        html.dark .text-zinc-500 {
-            color: #71717a !important;
+        html.dark .text-zinc-700,
+        html.dark .text-on-background,
+        html.dark .text-on-surface,
+        html.dark .dark\:text-white {
+            color: var(--text-main) !important;
         }
 
-        /* Dark mode backgrounds */
-        html.dark .bg-white {
-            background-color: #18181b !important;
-        }
-        html.dark .bg-zinc-50 {
-            background-color: #1c1c22 !important;
-        }
-        html.dark .bg-zinc-100 {
-            background-color: #27272a !important;
+        /* Tăng độ sáng Văn bản phụ / Label / Lượt xem / Ngày đăng */
+        html.dark .text-zinc-600,
+        html.dark .text-zinc-500,
+        html.dark .text-secondary,
+        html.dark .text-on-surface-variant,
+        html.dark .dark\:text-zinc-500,
+        html.dark .dark\:text-zinc-400,
+        html.dark .dark\:text-zinc-300 {
+            color: var(--text-muted) !important;
         }
 
-        /* Smooth transitions for dark mode */
-        body, header, nav, main, section, div, a, p, h1, h2, h3, span, button, input {
+        /* Borders */
+        html.dark .border-outline-variant,
+        html.dark .dark\:border-zinc-700,
+        html.dark .border-zinc-200,
+        html.dark .border-zinc-100 {
+            border-color: var(--border-color) !important;
+        }
+
+        /* Smooth transitions */
+        body, header, nav, main, section, div, a, p, h1, h2, h3, span, button, input, select {
             transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
         }
 

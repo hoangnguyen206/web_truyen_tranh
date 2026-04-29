@@ -156,7 +156,7 @@ function renderHeroCarousel(mangaList, t) {
         const categoryTags = categories.slice(0, 3).map(c => {
             const name = c.name || c;
             const slug = c.slug || encodeURIComponent(name);
-            return `<a href="/genres/${slug}" data-link class="bg-white/15 hover:bg-rose-500/80 text-white px-3 py-1 rounded-full text-[11px] font-semibold backdrop-blur-md border border-white/10 transition-colors z-20 relative pointer-events-auto">${name}</a>`;
+            return `<a href="/genres/${slug}" data-link onclick="event.stopPropagation()" class="bg-white/15 hover:bg-rose-500/80 text-white px-3 py-1 rounded-full text-[11px] font-semibold backdrop-blur-md border border-white/10 transition-colors z-20 relative pointer-events-auto">${name}</a>`;
         }).join('');
         
         const firstChapterApiData = manga.chaptersLatest?.[0]?.chapter_api_data || '';
@@ -169,7 +169,7 @@ function renderHeroCarousel(mangaList, t) {
             : `/manga/${manga.slug}`;
         
         return `
-        <div class="hero-slide absolute inset-0 transition-opacity duration-700 ease-in-out ${idx === 0 ? 'active opacity-100 z-10' : 'opacity-0 z-0'}" data-slide="${idx}">
+        <div class="hero-slide absolute inset-0 transition-opacity duration-700 ease-in-out cursor-pointer ${idx === 0 ? 'active opacity-100 z-10' : 'opacity-0 z-0'}" data-slide="${idx}" onclick="window.router.navigate('/manga/${manga.slug}')">
             <!-- Banner Image -->
             <img alt="${manga.name}" 
                  class="w-full h-full object-cover transition-transform duration-[8000ms] ease-out ${idx === 0 ? 'scale-105' : 'scale-100'}" 
@@ -199,13 +199,13 @@ function renderHeroCarousel(mangaList, t) {
                     Ch. ${firstChapterName} · ${categories.slice(0, 2).map(c => c.name || c).join(' / ') || 'Manga'}
                 </p>
                 <!-- Action Buttons -->
-                <div class="flex items-center gap-3">
-                    <a href="${readChapter1Href}" data-link 
+                <div class="flex items-center gap-3 relative z-30">
+                    <a href="${readChapter1Href}" data-link onclick="event.stopPropagation()"
                        class="bg-rose-600 hover:bg-rose-700 text-white px-6 md:px-8 py-3 md:py-3.5 rounded-full font-semibold text-sm md:text-[14px] transition-all active:scale-95 flex items-center gap-2 shadow-lg shadow-rose-600/30">
                         <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
                         ${t('read_chapter_1')}
                     </a>
-                    <button data-hero-lib onclick="window._heroAddToLibrary && window._heroAddToLibrary('${manga.slug}')"
+                    <button data-hero-lib onclick="event.stopPropagation(); window._heroAddToLibrary && window._heroAddToLibrary('${manga.slug}')"
                        class="bg-white/10 hover:bg-white/20 text-white px-5 md:px-6 py-3 md:py-3.5 rounded-full font-semibold text-sm md:text-[14px] transition-all active:scale-95 backdrop-blur-md border border-white/10 flex items-center gap-2">
                         <span class="material-symbols-outlined text-[18px]">bookmark_add</span>
                         ${t('add_to_library')}

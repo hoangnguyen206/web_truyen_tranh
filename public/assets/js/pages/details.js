@@ -163,7 +163,7 @@ export async function render(slug) {
             <!-- Chapter List Section (Bento Grid Approach) -->
             <section class="max-w-container-max mx-auto px-md mt-xl">
                 <!-- Section Header -->
-                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-end border-b border-outline-variant pb-sm mb-md gap-sm">
+                <div id="chapter-nav" class="flex flex-col sm:flex-row sm:justify-between sm:items-end border-b border-outline-variant pb-sm mb-md gap-sm sticky top-[64px] z-40 bg-background dark:bg-zinc-950 py-2 transition-all duration-300 transform origin-top">
                     <h2 class="font-headline-lg text-headline-lg text-on-background tracking-tight">${t('chapters_list')}</h2>
                     <div class="flex items-center gap-md">
                         <span class="font-label-md text-label-md text-secondary bg-surface-container-low px-sm py-xs rounded-md border border-outline-variant">
@@ -181,7 +181,52 @@ export async function render(slug) {
                     ${renderChapters()}
                 </div>
             </section>
-        </main>`;
+        </main>
+        <!-- Back to top button -->
+        <button id="back-to-top" class="fixed bottom-20 left-4 md:left-8 z-50 bg-rose-600 hover:bg-rose-500 text-white w-11 h-11 md:w-12 md:h-12 rounded-full shadow-lg shadow-rose-900/30 flex items-center justify-center transition-all duration-300 opacity-0 translate-y-10 pointer-events-none focus:outline-none" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+            <span class="material-symbols-outlined text-[22px] md:text-[24px]">arrow_upward</span>
+        </button>
+        `;
+
+        
+        // Scroll logic for navbar & back to top button
+        setTimeout(() => {
+            const btn = document.getElementById('back-to-top');
+            const chapterNav = document.getElementById('chapter-nav');
+            const appNav = document.querySelector('header');
+            
+            if (appNav) appNav.style.transition = 'transform 0.3s ease-in-out';
+            if (chapterNav) chapterNav.style.transition = 'transform 0.3s ease-in-out, opacity 0.3s ease-in-out';
+            
+            let lastScrollY = window.scrollY;
+            if (window._detailsScrollHandler) {
+                window.removeEventListener('scroll', window._detailsScrollHandler);
+            }
+            window._detailsScrollHandler = () => {
+                const currentScrollY = window.scrollY;
+                
+                // Hide/show App Navbar and adjust Chapter Nav
+                if (currentScrollY > 150 && currentScrollY > lastScrollY) {
+                    if (appNav) appNav.style.transform = 'translateY(-100%)';
+                    if (chapterNav) chapterNav.style.transform = 'translateY(-64px)'; // Move up since header is gone
+                } else if (currentScrollY < lastScrollY) {
+                    if (appNav) appNav.style.transform = 'translateY(0)';
+                    if (chapterNav) chapterNav.style.transform = 'translateY(0)';
+                }
+                lastScrollY = currentScrollY;
+
+                if (btn) {
+                    if (currentScrollY > 400) {
+                        btn.classList.remove('opacity-0', 'translate-y-10', 'pointer-events-none');
+                        btn.classList.add('opacity-100', 'translate-y-0');
+                    } else {
+                        btn.classList.add('opacity-0', 'translate-y-10', 'pointer-events-none');
+                        btn.classList.remove('opacity-100', 'translate-y-0');
+                    }
+                }
+            };
+            window.addEventListener('scroll', window._detailsScrollHandler, { passive: true });
+        }, 100);
 
         // === BIND SORTING BUTTON ===
         const sortBtn = document.getElementById('sort-chapters-btn');

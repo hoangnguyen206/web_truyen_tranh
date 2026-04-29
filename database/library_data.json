@@ -25,6 +25,71 @@
             "manga_status": "ongoing",
             "added_at": "2026-04-28 05:26:24",
             "updated_at": "2026-04-28 05:26:24"
+        },
+        {
+            "manga_slug": "nyc-va-gai-1-con",
+            "manga_name": "Nyc V\u00e0 G\u00e1i 1 Con",
+            "manga_thumb": "nyc-va-gai-1-con-thumb.jpg",
+            "tab": "reading",
+            "last_chapter_read": "13",
+            "last_chapter_url": "https:\/\/sv1.otruyencdn.com\/v1\/api\/chapter\/69f18113e0d753f32e5a4f82",
+            "total_chapters": 17,
+            "chapters_read": 13,
+            "manga_status": "coming_soon",
+            "added_at": "2026-04-29 07:27:24",
+            "updated_at": "2026-04-29 09:08:20"
+        },
+        {
+            "manga_slug": "nhung-ranker-cap-s-ma-toi-nuoi-duong",
+            "manga_name": "Nh\u1eefng Ranker c\u1ea5p S m\u00e0 t\u00f4i nu\u00f4i d\u01b0\u1ee1ng",
+            "manga_thumb": "nhung-ranker-cap-s-ma-toi-nuoi-duong-thumb.jpg",
+            "tab": "reading",
+            "last_chapter_read": "158",
+            "last_chapter_url": "https:\/\/sv1.otruyencdn.com\/v1\/api\/chapter\/69f1811a7b89b5b2570fb100",
+            "total_chapters": 155,
+            "chapters_read": 158,
+            "manga_status": "ongoing",
+            "added_at": "2026-04-29 07:34:32",
+            "updated_at": "2026-04-29 07:34:32"
+        },
+        {
+            "manga_slug": "nhieu-qua-roi-do-hochiya-san-a",
+            "manga_name": "Nhi\u1ec1u Qu\u00e1 R\u1ed3i \u0110\u00f3, Hochiya-San \u00c0!!",
+            "manga_thumb": "nhieu-qua-roi-do-hochiya-san-a-thumb.jpg",
+            "tab": "reading",
+            "last_chapter_read": "20",
+            "last_chapter_url": "https:\/\/sv1.otruyencdn.com\/v1\/api\/chapter\/69eb64fe7b89b5b2570f81ae",
+            "total_chapters": 21,
+            "chapters_read": 20,
+            "manga_status": "coming_soon",
+            "added_at": "2026-04-29 07:49:25",
+            "updated_at": "2026-04-29 08:06:37"
+        },
+        {
+            "manga_slug": "dai-quan-gia-la-ma-hoang",
+            "manga_name": "\u0110\u1ea1i Qu\u1ea3n Gia L\u00e0 Ma Ho\u00e0ng",
+            "manga_thumb": "dai-quan-gia-la-ma-hoang-thumb.jpg",
+            "tab": "reading",
+            "last_chapter_read": "848",
+            "last_chapter_url": "https:\/\/sv1.otruyencdn.com\/v1\/api\/chapter\/69f17e96e0d753f32e5a4e09",
+            "total_chapters": 860,
+            "chapters_read": 848,
+            "manga_status": "ongoing",
+            "added_at": "2026-04-29 08:08:57",
+            "updated_at": "2026-04-29 08:23:18"
+        },
+        {
+            "manga_slug": "nhan-vat-phan-dien-chac-chan-khong-phai-ta",
+            "manga_name": "Nh\u00e2n V\u1eadt Ph\u1ea3n Di\u1ec7n? Ch\u1eafc Ch\u1eafn Kh\u00f4ng Ph\u1ea3i Ta",
+            "manga_thumb": "nhan-vat-phan-dien-chac-chan-khong-phai-ta-thumb.jpg",
+            "tab": "reading",
+            "last_chapter_read": "246",
+            "last_chapter_url": "https:\/\/sv1.otruyencdn.com\/v1\/api\/chapter\/69f18110e0d753f32e5a4f78",
+            "total_chapters": 237,
+            "chapters_read": 246,
+            "manga_status": "ongoing",
+            "added_at": "2026-04-29 09:11:21",
+            "updated_at": "2026-04-29 09:11:21"
         }
     ]
 }
